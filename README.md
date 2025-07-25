@@ -840,3 +840,26 @@ Reviews	Rate/Review, Response, Rating Avg
 Notifications	Alerts, Mark Read, Dropdown
 Search	Filter Jobs/Users by skills, location, rating
 Dashboard	Summary Cards, Activity Charts
+
+
+User Auth (register, login, role)
+
+Profiles (freelancer/client)
+
+Job Listings (clients)
+
+Service Listings (freelancers)
+
+Contracts (both sides)
+
+Payments (milestones, Stripe, etc.)
+
+Reviews/Ratings
+
+Notifications
+
+Dashboards
+
+Search/Filter
+
+Transaction history

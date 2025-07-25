@@ -1,5 +1,6 @@
 // src/pages/Profile.jsx
 import React, { useEffect, useState } from 'react';
+import { toast } from 'react-toastify';
 import API from '../api/axios';
 
 export default function Profile() {
@@ -10,7 +11,11 @@ export default function Profile() {
     const localUser = JSON.parse(localStorage.getItem('user'));
     if (localUser) {
       setUser(localUser);
-      setForm({ name: localUser.name, email: localUser.email, bio: localUser.bio || '' });
+      setForm({
+        name: localUser.name || '',
+        email: localUser.email || '',
+        bio: localUser.bio || '',
+      });
     }
   }, []);
 
@@ -22,34 +27,51 @@ export default function Profile() {
     e.preventDefault();
     try {
       const res = await API.put('/auth/profile', form);
-      alert('Profile updated!');
       localStorage.setItem('user', JSON.stringify(res.data));
       setUser(res.data);
+      toast.success('Profile updated successfully');
     } catch (err) {
-      alert('Update failed');
+      toast.error('Profile update failed');
     }
   };
 
   return (
-    <div className="max-w-xl mx-auto bg-white p-6 shadow rounded">
-      <h2 className="text-2xl font-semibold mb-4">Edit Profile</h2>
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div>
-          <label className="block text-gray-700">Name</label>
-          <input type="text" name="name" value={form.name} onChange={handleChange}
-            className="w-full border p-2 rounded" required />
-        </div>
-        <div>
-          <label className="block text-gray-700">Email</label>
-          <input type="email" name="email" value={form.email} onChange={handleChange}
-            className="w-full border p-2 rounded" required />
-        </div>
-        <div>
-          <label className="block text-gray-700">Bio</label>
-          <textarea name="bio" value={form.bio} onChange={handleChange}
-            className="w-full border p-2 rounded" rows="4" />
-        </div>
-        <button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded">
+    <div className="min-h-screen flex items-center justify-center bg-blue-50">
+      <form onSubmit={handleSubmit} className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
+        <h2 className="text-2xl font-bold mb-6 text-center text-blue-600">Edit Profile</h2>
+
+        <label className="text-sm font-medium">Name</label>
+        <input
+          name="name"
+          value={form.name}
+          onChange={handleChange}
+          placeholder="Your Name"
+          className="border p-2 rounded w-full mb-4"
+          required
+        />
+
+        <label className="text-sm font-medium">Email</label>
+        <input
+          name="email"
+          type="email"
+          value={form.email}
+          onChange={handleChange}
+          placeholder="Your Email"
+          className="border p-2 rounded w-full mb-4"
+          required
+        />
+
+        <label className="text-sm font-medium">Bio</label>
+        <textarea
+          name="bio"
+          value={form.bio}
+          onChange={handleChange}
+          placeholder="A short bio about you"
+          className="border p-2 rounded w-full mb-6"
+          rows="4"
+        />
+
+        <button type="submit" className="bg-blue-600 hover:bg-blue-700 text-white p-2 rounded w-full">
           Save Changes
         </button>
       </form>

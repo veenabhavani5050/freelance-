@@ -83,16 +83,6 @@ const Home = () => {
           iconColor="text-indigo-600"
         />
       </section>
-
-      {/* Footer / CTA Section */}
-      <footer className="text-center py-10 bg-blue-50 border-t">
-        <p className="text-gray-700">
-          🚀 Start your freelance journey today —{" "}
-          <Link to="/register" className="text-blue-600 underline hover:text-blue-800">
-            Sign up now
-          </Link>
-        </p>
-      </footer>
     </div>
   );
 };
