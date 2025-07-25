@@ -10,7 +10,6 @@ dotenv.config();
 
 const app = express();
 
-// ✅ Correct CORS config for Vite frontend
 app.use(cors({
   origin: process.env.FRONTEND_URL,
   credentials: true,
@@ -22,7 +21,6 @@ app.use(cookieParser());
 
 app.use('/api/auth', authRoutes);
 
-// Error handlers
 app.use(notFound);
 app.use(errorHandler);
 
