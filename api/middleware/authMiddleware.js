@@ -1,10 +1,10 @@
-// middleware/authMiddleware.js
 import jwt from 'jsonwebtoken';
 import asyncHandler from 'express-async-handler';
 import User from '../models/User.js';
 
 export const protect = asyncHandler(async (req, res, next) => {
   const token = req.cookies.jwt;
+
   if (!token) {
     res.status(401);
     throw new Error('Not authorized, no token');

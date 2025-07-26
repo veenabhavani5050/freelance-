@@ -1,4 +1,4 @@
-// src/pages/Dashboard.jsx
+// 📁 src/pages/Dashboard.jsx
 import React from 'react';
 import { Link } from 'react-router-dom';
 import {
@@ -8,6 +8,7 @@ import {
   FaStar,
   FaPlusCircle,
   FaUsers,
+  FaLayerGroup,
 } from 'react-icons/fa';
 
 export default function Dashboard() {
@@ -22,7 +23,6 @@ export default function Dashboard() {
   }
 
   const isFreelancer = user.role === 'freelancer';
-  const isClient = user.role === 'client';
 
   const cards = isFreelancer
     ? [
@@ -30,9 +30,17 @@ export default function Dashboard() {
           icon: <FaBriefcase />,
           title: 'My Services',
           description: 'Manage your active service listings',
-          to: '/my-services',
+          to: '/freelancer/services',
           bg: 'bg-blue-100',
           iconColor: 'text-blue-600',
+        },
+        {
+          icon: <FaPlusCircle />,
+          title: 'Create Service',
+          description: 'Add a new service to offer',
+          to: '/freelancer/create-service',
+          bg: 'bg-cyan-100',
+          iconColor: 'text-cyan-600',
         },
         {
           icon: <FaFileContract />,

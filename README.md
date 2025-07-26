@@ -863,3 +863,51 @@ Dashboards
 Search/Filter
 
 Transaction history
+
+👤 User Authentication
+Registration/Login with role (freelancer / client)
+
+Role-based UI access
+
+Password reset/change
+
+🧑‍💼 Freelancer Features
+Create/manage service listings (gigs)
+
+Showcase portfolio, availability, reviews
+
+Accept contracts
+
+Milestone-based payments
+
+Respond to client reviews
+
+🧑‍💻 Client Features
+Post job listings
+
+Search/filter freelancers
+
+Create and manage contracts
+
+Leave reviews/ratings
+
+💸 Payment Integration
+Milestone payments (escrow-style)
+
+Stripe or Razorpay integration
+
+Transaction history
+
+⭐ Reviews & Ratings
+Leave and respond to reviews
+
+Display on profiles
+
+📢 Additional Features
+Notifications (real-time via socket.io)
+
+Advanced search & filtering
+
+Dashboards (Freelancer & Client)
+
+TailwindCSS styling
