@@ -1,10 +1,12 @@
-// ✅ src/pages/PostJob.jsx
-import React, { useState } from 'react';
+// ✅ src/pages/EditJob.jsx
+import React, { useEffect, useState } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import API from '../api/axios';
 import { toast } from 'react-toastify';
-import { useNavigate } from 'react-router-dom';
 
-export default function PostJob() {
+export default function EditJob() {
+  const { id } = useParams();
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     title: '',
     description: '',
@@ -14,7 +16,31 @@ export default function PostJob() {
     location: '',
   });
 
-  const navigate = useNavigate();
+  useEffect(() => {
+    const fetchJob = async () => {
+      try {
+        const user = JSON.parse(localStorage.getItem('user'));
+        const token = user?.token;
+
+        const { data } = await API.get(`/jobs/${id}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        setFormData({
+          title: data.title,
+          description: data.description,
+          budget: data.budget,
+          deadline: data.deadline.split('T')[0],
+          category: data.category,
+          location: data.location || '',
+        });
+      } catch (err) {
+        toast.error('Failed to load job for editing');
+        navigate('/client/jobs');
+      }
+    };
+    fetchJob();
+  }, [id, navigate]);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -22,34 +48,30 @@ export default function PostJob() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     try {
       const user = JSON.parse(localStorage.getItem('user'));
       const token = user?.token;
 
-      await API.post('/jobs', formData, {
-        headers: {
-          Authorization: `Bearer ${token}`, // ✅ send token
-        },
+      await API.put(`/jobs/${id}`, formData, {
+        headers: { Authorization: `Bearer ${token}` },
       });
 
-      toast.success('Job posted successfully!');
-      navigate('/client/jobs');
+      toast.success('Job updated successfully');
+      navigate(`/client/jobs/${id}`);
     } catch (err) {
-      toast.error(err.response?.data?.message || 'Something went wrong');
+      toast.error('Update failed');
     }
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-blue-50">
       <form onSubmit={handleSubmit} className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
-        <h2 className="text-2xl font-bold mb-6 text-center text-blue-600">Post a Job</h2>
+        <h2 className="text-2xl font-bold mb-6 text-center text-blue-600">Edit Job</h2>
 
         <label className="text-sm font-medium">Job Title</label>
         <input
           type="text"
           name="title"
-          placeholder="Enter job title"
           value={formData.title}
           onChange={handleChange}
           required
@@ -59,7 +81,6 @@ export default function PostJob() {
         <label className="text-sm font-medium">Description</label>
         <textarea
           name="description"
-          placeholder="Describe the job"
           value={formData.description}
           onChange={handleChange}
           required
@@ -70,7 +91,6 @@ export default function PostJob() {
         <input
           type="number"
           name="budget"
-          placeholder="Enter budget"
           value={formData.budget}
           onChange={handleChange}
           required
@@ -106,14 +126,13 @@ export default function PostJob() {
         <input
           type="text"
           name="location"
-          placeholder="Remote / City"
           value={formData.location}
           onChange={handleChange}
           className="border p-2 rounded w-full mb-6"
         />
 
         <button type="submit" className="bg-blue-600 hover:bg-blue-700 text-white p-2 rounded w-full">
-          Post Job
+          Update Job
         </button>
       </form>
     </div>

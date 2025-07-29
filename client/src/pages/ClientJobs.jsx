@@ -1,7 +1,7 @@
-// 📁 src/pages/ClientJobs.jsx
+// ✅ src/pages/ClientJobs.jsx
 import React, { useEffect, useState } from 'react';
 import API from '../api/axios';
-import { FaRupeeSign, FaRegClock, FaClipboardList } from 'react-icons/fa';
+import { FaRupeeSign, FaRegClock, FaClipboardList, FaCalendarAlt } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 
 export default function ClientJobs() {
@@ -42,22 +42,35 @@ function JobCard({ job }) {
   return (
     <div className="bg-white border rounded-2xl shadow hover:shadow-xl transition-all p-6 flex flex-col justify-between">
       <div>
-        <h3 className="text-xl font-semibold text-blue-700 mb-2 flex items-center gap-2">
+        <h3 className="text-xl font-semibold text-blue-700 mb-3 flex items-center gap-2">
           <FaClipboardList className="text-blue-600" />
           {job.title}
         </h3>
-        <p className="text-gray-700 text-sm mb-4 line-clamp-3">{job.description}</p>
+
+        <p className="text-gray-600 text-sm mb-4 line-clamp-3">{job.description}</p>
+
+        <div className="text-sm space-y-2">
+          <div className="flex items-center gap-2">
+            <FaRupeeSign className="text-green-600" />
+            <span className="font-medium">Budget:</span> ₹{job.budget}
+          </div>
+          <div className="flex items-center gap-2">
+            <FaRegClock className="text-yellow-500" />
+            <span className="font-medium">Duration:</span> {job.duration || 'Not specified'}
+          </div>
+          <div className="flex items-center gap-2">
+            <FaCalendarAlt className="text-purple-600" />
+            <span className="font-medium">Posted:</span> {new Date(job.createdAt).toLocaleDateString()}
+          </div>
+        </div>
       </div>
 
-      <div className="flex justify-between items-center mt-4 pt-4 border-t text-sm text-gray-600">
-        <span className="flex items-center gap-1 text-blue-600 font-semibold">
-          <FaRupeeSign /> {job.budget}
-        </span>
+      <div className="flex justify-end mt-4 pt-4 border-t">
         <Link
-          to={`/client/job/${job._id}`}
-          className="text-sm text-blue-600 hover:underline font-medium"
+          to={`/client/jobs/${job._id}`}
+          className="text-blue-600 hover:underline font-semibold text-sm"
         >
-          View Details
+          View Details →
         </Link>
       </div>
     </div>

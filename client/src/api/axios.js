@@ -1,8 +1,7 @@
-// src/api/axios.js
 import axios from 'axios';
 import { toast } from 'react-toastify';
 
-const baseURL = `${import.meta.env.VITE_API_URL}/api`; // ✅ Add /api here
+const baseURL = `${import.meta.env.VITE_API_URL}/api`;
 
 const API = axios.create({
   baseURL,
@@ -11,7 +10,8 @@ const API = axios.create({
 
 API.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('token');
+    const user = JSON.parse(localStorage.getItem('user'));
+    const token = user?.token;
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }

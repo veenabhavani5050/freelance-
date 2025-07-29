@@ -1,14 +1,21 @@
-// ✅ src/components/Sidebar.jsx (already updated)
-import React from 'react';
+// src/components/Sidebar.jsx
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 
 export default function Sidebar() {
-  const user = JSON.parse(localStorage.getItem('user'));
-  const role = user?.role;
+  const [role, setRole] = useState('');
+
+  useEffect(() => {
+    const user = JSON.parse(localStorage.getItem('user'));
+    setRole(user?.role || '');
+  }, []);
 
   return (
     <div className="w-64 bg-blue-700 text-white p-6 space-y-4 min-h-screen">
-      <h2 className="text-xl font-bold">{role === 'client' ? 'Client' : 'Freelancer'} Panel</h2>
+      <h2 className="text-xl font-bold mb-4">
+        {role === 'freelancer' ? 'Freelancer Panel' : 'Client Panel'}
+      </h2>
+
       <Link to="/dashboard" className="block hover:text-blue-200">Dashboard</Link>
       <Link to="/profile" className="block hover:text-blue-200">Profile</Link>
 
