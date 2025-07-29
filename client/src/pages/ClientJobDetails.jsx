@@ -1,4 +1,3 @@
-// ✅ src/pages/ClientJobDetails.jsx
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import API from '../api/axios';
@@ -58,7 +57,7 @@ export default function ClientJobDetails() {
         <div className="space-x-2">
           <Link
             to={`/client/jobs/${job._id}/edit`}
-            className="inline-flex items-center gap-1 bg-yellow-400 hover:bg-yellow-500 text-white px-3 py-1 rounded"
+            className="inline-flex items-center gap-1 bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded"
           >
             <FaEdit /> Edit
           </Link>
@@ -70,13 +69,16 @@ export default function ClientJobDetails() {
           </button>
         </div>
       </div>
-      <p className="text-gray-700 mb-4">{job.description}</p>
-      <div className="text-sm text-gray-600 space-y-1">
+
+      <p className="text-gray-800 mb-4 whitespace-pre-line">{job.description}</p>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm text-gray-600">
         <p><strong>Budget:</strong> ₹{job.budget}</p>
         <p><strong>Deadline:</strong> {new Date(job.deadline).toLocaleDateString()}</p>
         <p><strong>Category:</strong> {job.category}</p>
         {job.location && <p><strong>Location:</strong> {job.location}</p>}
         <p><strong>Status:</strong> {job.status}</p>
+        <p><strong>Posted:</strong> {new Date(job.createdAt).toLocaleString()}</p>
       </div>
     </div>
   );
