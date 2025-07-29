@@ -1,4 +1,3 @@
-// ✅ controllers/serviceController.js
 import Service from '../models/Service.js';
 
 export const createService = async (req, res) => {
@@ -7,7 +6,7 @@ export const createService = async (req, res) => {
     const createdService = await service.save();
     res.status(201).json(createdService);
   } catch (error) {
-    res.status(500).json({ message: 'Error creating service', error });
+    res.status(500).json({ message: 'Error creating service', error: error.message });
   }
 };
 
@@ -16,7 +15,7 @@ export const getAllServices = async (req, res) => {
     const services = await Service.find().populate('user', 'name email');
     res.status(200).json(services);
   } catch (error) {
-    res.status(500).json({ message: 'Error fetching services', error });
+    res.status(500).json({ message: 'Error fetching services', error: error.message });
   }
 };
 
@@ -26,7 +25,7 @@ export const getServiceById = async (req, res) => {
     if (!service) return res.status(404).json({ message: 'Service not found' });
     res.status(200).json(service);
   } catch (error) {
-    res.status(500).json({ message: 'Error fetching service', error });
+    res.status(500).json({ message: 'Error fetching service', error: error.message });
   }
 };
 
@@ -34,13 +33,14 @@ export const updateService = async (req, res) => {
   try {
     const service = await Service.findById(req.params.id);
     if (!service) return res.status(404).json({ message: 'Service not found' });
-    if (service.user.toString() !== req.user._id.toString()) return res.status(403).json({ message: 'Not authorized' });
+    if (service.user.toString() !== req.user._id.toString())
+      return res.status(403).json({ message: 'Not authorized' });
 
     Object.assign(service, req.body);
     const updated = await service.save();
     res.status(200).json(updated);
   } catch (error) {
-    res.status(500).json({ message: 'Error updating service', error });
+    res.status(500).json({ message: 'Error updating service', error: error.message });
   }
 };
 
@@ -48,11 +48,12 @@ export const deleteService = async (req, res) => {
   try {
     const service = await Service.findById(req.params.id);
     if (!service) return res.status(404).json({ message: 'Service not found' });
-    if (service.user.toString() !== req.user._id.toString()) return res.status(403).json({ message: 'Not authorized' });
+    if (service.user.toString() !== req.user._id.toString())
+      return res.status(403).json({ message: 'Not authorized' });
 
     await service.deleteOne();
     res.status(200).json({ message: 'Service removed' });
   } catch (error) {
-    res.status(500).json({ message: 'Error deleting service', error });
+    res.status(500).json({ message: 'Error deleting service', error: error.message });
   }
 };

@@ -1,35 +1,53 @@
-// ✅ src/pages/FreelancerServices.jsx
+// src/pages/FreelancerServices.jsx
 import React, { useEffect, useState } from 'react';
-import API from '../api/axios';
+import axios from 'axios';
 import { Link } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
-export default function FreelancerServices() {
+const FreelancerServices = () => {
   const [services, setServices] = useState([]);
 
-  useEffect(() => {
-    const fetchServices = async () => {
-      try {
-        const { data } = await API.get('/api/services/my-services');
-        setServices(data);
-      } catch (err) {
-        console.error(err);
-      }
-    };
-    fetchServices();
-  }, []);
+  const fetchMyServices = async () => {
+    try {
+      const res = await axios.get('/api/services', { withCredentials: true });
+      const userId = JSON.parse(localStorage.getItem('user'))._id;
+      setServices(res.data.filter(service => service.user._id === userId));
+    } catch {
+      toast.error('Failed to load your services');
+    }
+  };
+
+  useEffect(() => { fetchMyServices(); }, []);
+
+  const handleDelete = async (id) => {
+    if (!window.confirm('Delete this service?')) return;
+    try {
+      await axios.delete(`/api/services/${id}`);
+      toast.success('Service deleted');
+      fetchMyServices();
+    } catch {
+      toast.error('Delete failed');
+    }
+  };
 
   return (
-    <div className="p-6">
-      <h2 className="text-2xl font-bold mb-4">My Services</h2>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {services.map((service) => (
-          <div key={service._id} className="bg-white rounded-xl shadow p-4 border">
-            <h3 className="text-lg font-semibold">{service.title}</h3>
-            <p>{service.description}</p>
-            <p className="text-blue-600">₹{service.price}</p>
+    <div className="p-4">
+      <h2 className="text-2xl font-bold text-blue-600 mb-4">My Services</h2>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        {services.map(service => (
+          <div key={service._id} className="border rounded p-4 shadow space-y-2">
+            <h3 className="font-semibold text-lg">{service.title}</h3>
+            <p>₹{service.price}</p>
+            <p className="text-sm text-gray-500">{service.category}</p>
+            <div className="space-x-2">
+              <Link to={`/freelancer/services/${service._id}/edit`} className="text-blue-500 hover:underline">Edit</Link>
+              <button onClick={() => handleDelete(service._id)} className="text-red-500 hover:underline">Delete</button>
+            </div>
           </div>
         ))}
       </div>
     </div>
   );
-}
+};
+
+export default FreelancerServices;

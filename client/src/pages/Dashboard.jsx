@@ -8,7 +8,6 @@ import {
   FaStar,
   FaPlusCircle,
   FaUsers,
-  FaLayerGroup,
 } from 'react-icons/fa';
 
 export default function Dashboard() {

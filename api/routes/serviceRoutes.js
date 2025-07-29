@@ -1,4 +1,3 @@
-// ✅ routes/serviceRoutes.js
 import express from 'express';
 import {
   createService,
@@ -7,17 +6,32 @@ import {
   updateService,
   deleteService,
 } from '../controllers/serviceController.js';
-import { protect } from '../middleware/authMiddleware.js';
+import { protect, authorizeRoles } from '../middleware/authMiddleware.js';
+import { validateService } from '../middleware/validationMiddleware.js';
 
 const router = express.Router();
 
 router.route('/')
   .get(getAllServices)
-  .post(protect, createService);
+  .post(
+    protect,
+    authorizeRoles('freelancer'),
+    validateService,
+    createService
+  );
 
 router.route('/:id')
   .get(getServiceById)
-  .put(protect, updateService)
-  .delete(protect, deleteService);
+  .put(
+    protect,
+    authorizeRoles('freelancer'),
+    validateService,
+    updateService
+  )
+  .delete(
+    protect,
+    authorizeRoles('freelancer'),
+    deleteService
+  );
 
 export default router;

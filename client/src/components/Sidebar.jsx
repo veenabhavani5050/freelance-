@@ -1,4 +1,4 @@
-// src/components/Sidebar.jsx
+// 📁 src/components/Sidebar.jsx
 import React, { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 
