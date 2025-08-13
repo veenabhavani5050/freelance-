@@ -1,23 +1,26 @@
-// ✅ src/components/Topbar.jsx
+// src/components/Topbar.jsx
 import React from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
+import { useUser } from '../context/UserContext'; // Import useUser
 
-export default function Topbar({ user }) {
-  const navigate = useNavigate();
+export default function Topbar() {
+  const { user, logout } = useUser(); // Get user and logout function from context
 
-  const handleLogout = () => {
-    localStorage.removeItem('user');
-    navigate('/login');
-  };
+  if (!user) {
+    return null; // Don't render topbar if not logged in
+  }
 
-  const profileImage = user?.profilePic?.trim()
-    ? user.profilePic
+  const profileImage = user?.user?.profilePic?.trim()
+    ? user.user.profilePic
     : '/default-avatar.png';
+
+  const dashboardTitle =
+    user?.user?.role === 'freelancer' ? 'Freelancer Dashboard' : 'Client Dashboard';
 
   return (
     <div className="bg-white shadow p-4 flex justify-between items-center">
       <h1 className="text-lg font-bold text-blue-700">
-        {user?.role === 'freelancer' ? 'Freelancer Dashboard' : 'Client Dashboard'}
+        {dashboardTitle}
       </h1>
 
       <div className="flex items-center gap-4">
@@ -30,11 +33,11 @@ export default function Topbar({ user }) {
         </Link>
 
         <span className="text-gray-700 font-semibold capitalize">
-          {user?.name || 'User'}
+          {user?.user?.name || 'User'}
         </span>
 
         <button
-          onClick={handleLogout}
+          onClick={logout}
           className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 transition-all"
         >
           Logout

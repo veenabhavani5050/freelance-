@@ -1,8 +1,17 @@
+// src/components/Sidebar.jsx
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import { useUser } from '../context/UserContext'; // Import useUser
 
-const Sidebar = ({ role }) => {
+const Sidebar = () => {
   const location = useLocation();
+  const { user } = useUser(); // Get user from context
+
+  if (!user) {
+    return null; // Don't render sidebar if not logged in
+  }
+
+  const role = user.user.role; // Use the role from the context user object
 
   const linkClass = (path) =>
     `block py-2 px-3 rounded hover:bg-blue-600 transition ${
@@ -17,7 +26,7 @@ const Sidebar = ({ role }) => {
 
       {role === 'freelancer' ? (
         <>
-          <Link to="/freelancer/dashboard" className={linkClass('/freelancer/dashboard')}>
+          <Link to="/dashboard" className={linkClass('/dashboard')}>
             🏠 Dashboard
           </Link>
           <Link to="/profile" className={linkClass('/profile')}>
@@ -32,16 +41,16 @@ const Sidebar = ({ role }) => {
           <Link to="/contracts" className={linkClass('/contracts')}>
             📁 My Contracts
           </Link>
-          <Link to="/freelancer/earnings" className={linkClass('/freelancer/earnings')}>
-            💰 Earnings
-          </Link>
-          <Link to="/freelancer/reviews" className={linkClass('/freelancer/reviews')}>
-            ⭐ My Reviews
-          </Link>
+          {/* <Link to="/freelancer/earnings" className={linkClass('/freelancer/earnings')}> */}
+          {/* 💰 Earnings */}
+          {/* </Link> */}
+          {/* <Link to="/freelancer/reviews" className={linkClass('/freelancer/reviews')}> */}
+          {/* ⭐ My Reviews */}
+          {/* </Link> */}
         </>
       ) : (
         <>
-          <Link to="/client/dashboard" className={linkClass('/client/dashboard')}>
+          <Link to="/dashboard" className={linkClass('/dashboard')}>
             🏠 Dashboard
           </Link>
           <Link to="/profile" className={linkClass('/profile')}>
@@ -59,9 +68,9 @@ const Sidebar = ({ role }) => {
           <Link to="/freelancers" className={linkClass('/freelancers')}>
             🔍 Freelancers
           </Link>
-          <Link to="/payments" className={linkClass('/payments')}>
-            💸 Payments
-          </Link>
+          {/* <Link to="/payments" className={linkClass('/payments')}> */}
+          {/* 💸 Payments */}
+          {/* </Link> */}
         </>
       )}
     </div>
