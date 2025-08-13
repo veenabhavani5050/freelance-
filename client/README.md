@@ -1,12 +1,63 @@
-# React + Vite
+client\src\components\Footer.jsx
+client\src\components\Layout.jsx
+client\src\components\Loader.jsx
+client\src\components\ProtectedRoute.jsx
+client\src\components\PublicLayout.jsx
+client\src\components\ServiceCard.jsx
+client\src\components\Sidebar.jsx
+client\src\components\Topbar.jsx
+client\src\pages\ClientDashboard.jsx
+client\src\pages\ClientJobDetails.jsx
+client\src\pages\ClientJobs.jsx
+client\src\pages\CreateService.jsx
+client\src\pages\Dashboard.jsx
+client\src\pages\EditJob.jsx
+client\src\pages\EditService.jsx
+client\src\pages\ForgotPassword.jsx
+client\src\pages\FreelancerDashboard.jsx
+client\src\pages\Freelancers.jsx
+client\src\pages\FreelancerServices.jsx
+client\src\pages\FreelancersList.jsx
+client\src\pages\Home.jsx
+client\src\pages\Login.jsx
+client\src\pages\NotFound.jsx
+client\src\pages\PostJob.jsx
+client\src\pages\Profile.jsx
+client\src\pages\Register.jsx
+client\src\pages\ResetPassword.jsx
+client\src\pages\ServiceDetail.jsx
+client\src\pages\Services.jsx
+client\src\App.jsx
+client\src\main.jsx
+client\src\pages\ContractDetails.jsx
+client\src\pages\Contracts.jsx
+client\src\pages\CreateContract.jsx
+client\src\components\ContractCard.jsx
+client\src\pages\EditContract.jsx
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
-Currently, two official plugins are available:
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
 
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+api\config\db.js
+api\config\passport.js
+api\controllers\authController.js
+api\controllers\contractController.js
+api\controllers\jobController.js
+api\controllers\serviceController.js
+api\middleware\authMiddleware.js
+api\middleware\errorMiddleware.js
+api\middleware\uploadMiddleware.js
+api\middleware\validationMiddleware.js
+api\models\Contract.js
+api\models\Job.js
+api\models\Service.js
+api\models\User.js
+api\routes\authRoutes.js
+api\routes\contractRoutes.js
+api\routes\jobRoutes.js
+api\routes\serviceRoutes.js
+api\utils\generateToken.js
+api\utils\googleVerifyToken.js
+api\utils\sendEmail.js
+api\app.js
+api\server.js

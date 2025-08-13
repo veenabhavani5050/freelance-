@@ -1,4 +1,3 @@
-// routes/authRoutes.js
 import express from 'express';
 import passport from '../config/passport.js';
 import {
@@ -9,8 +8,8 @@ import {
   resetPassword,
   getUserProfile,
   updateUserProfile,
-  googleLogin,          // ✅ IMPORTED HERE
-  googleCallback,
+  googleLogin,      // Google One Tap handler
+  googleCallback,   // OAuth callback handler
 } from '../controllers/authController.js';
 import { protect } from '../middleware/authMiddleware.js';
 
@@ -23,11 +22,14 @@ router.post('/logout', logoutUser);
 router.post('/forgot-password', forgotPassword);
 router.post('/reset/:token', resetPassword);
 
-// ✅ Google One Tap (GSI Token) Route
-router.post('/google', googleLogin); // ✅ NEW route added
+// Google One Tap Login Route (POST with GSI token)
+router.post('/google', googleLogin);
 
-// Google OAuth Redirect Flow
-router.get('/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
+// Google OAuth Routes
+router.get(
+  '/google',
+  passport.authenticate('google', { scope: ['profile', 'email'] })
+);
 
 router.get(
   '/google/callback',
@@ -38,7 +40,7 @@ router.get(
   googleCallback
 );
 
-// Protected User Routes
+// Protected User Routes (JWT protected)
 router.get('/profile', protect, getUserProfile);
 router.put('/profile', protect, updateUserProfile);
 

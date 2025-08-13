@@ -1,17 +1,9 @@
-// src/components/Topbar.jsx
-import React, { useEffect, useState } from 'react';
+// ✅ src/components/Topbar.jsx
+import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
-export default function Topbar() {
-  const [user, setUser] = useState(null);
+export default function Topbar({ user }) {
   const navigate = useNavigate();
-
-  useEffect(() => {
-    const storedUser = localStorage.getItem('user');
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
-    }
-  }, []);
 
   const handleLogout = () => {
     localStorage.removeItem('user');

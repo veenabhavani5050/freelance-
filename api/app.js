@@ -6,15 +6,11 @@ import dotenv from 'dotenv';
 import session from 'express-session';
 import passport from './config/passport.js';
 
-// 🆕 Validation Middleware Import (for side effects or schema hooks)
-import './middleware/validationMiddleware.js'; 
-
-// Routes
 import authRoutes from './routes/authRoutes.js';
 import serviceRoutes from './routes/serviceRoutes.js';
 import jobRoutes from './routes/jobRoutes.js';
+import contractRoutes from './routes/contractRoutes.js';
 
-// Error handling middlewares
 import { notFound, errorHandler } from './middleware/errorMiddleware.js';
 
 dotenv.config();
@@ -47,6 +43,7 @@ app.use(passport.session());
 app.use('/api/auth', authRoutes);
 app.use('/api/services', serviceRoutes);
 app.use('/api/jobs', jobRoutes);
+app.use('/api/contracts', contractRoutes);
 
 // Error Handling
 app.use(notFound);

@@ -16,8 +16,9 @@ export default function Login() {
     e.preventDefault();
     try {
       const res = await API.post('/auth/login', form);
-      localStorage.setItem('user', JSON.stringify(res.data));
-      localStorage.setItem('token', res.data.token);
+      const userWithToken = { ...res.data, token: res.data.token };
+      localStorage.setItem('user', JSON.stringify(userWithToken));
+
       toast.success('Login successful');
       navigate('/dashboard');
     } catch (error) {
@@ -27,11 +28,14 @@ export default function Login() {
 
   const handleGoogleSuccess = async (response) => {
     try {
+      // This is the call that sends the Google credential to your backend
       const res = await API.post('/auth/google', {
         credential: response.credential,
       });
-      localStorage.setItem('user', JSON.stringify(res.data));
-      localStorage.setItem('token', res.data.token);
+
+      const userWithToken = { ...res.data, token: res.data.token };
+      localStorage.setItem('user', JSON.stringify(userWithToken));
+
       toast.success('Google login successful');
       navigate('/dashboard');
     } catch (err) {
@@ -63,6 +67,7 @@ export default function Login() {
           placeholder="Your Email"
           className="border p-2 rounded w-full mb-4"
           required
+          autoComplete="username" 
         />
 
         <label className="text-sm font-medium">Password</label>
@@ -83,6 +88,7 @@ export default function Login() {
 
         <div className="my-6 text-center">
           <p className="text-gray-500 mb-2">OR</p>
+          {/* This is the Google Sign-In button that triggers the auth flow */}
           <GoogleLogin
             onSuccess={handleGoogleSuccess}
             onError={() => toast.error('Google login failed')}

@@ -4,6 +4,14 @@ import { OAuth2Client } from 'google-auth-library';
 import User from '../models/User.js';
 import sendEmail from '../utils/sendEmail.js';
 
+// IMPORTANT: This file's code is correct.
+// The `Error 400: origin_mismatch` error you are receiving
+// is caused by a misconfiguration in your Google Cloud Console,
+// not by this code.
+//
+// To fix it, you need to add your app's URL (e.g., http://localhost:3000)
+// to the "Authorized JavaScript origins" list in your OAuth 2.0 Client ID settings.
+
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 // Utility: Generate JWT

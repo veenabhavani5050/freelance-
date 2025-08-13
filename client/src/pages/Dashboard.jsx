@@ -1,4 +1,3 @@
-// 📁 src/pages/Dashboard.jsx
 import React from 'react';
 import { Link } from 'react-router-dom';
 import {
@@ -8,6 +7,7 @@ import {
   FaStar,
   FaPlusCircle,
   FaUsers,
+  FaListAlt
 } from 'react-icons/fa';
 
 export default function Dashboard() {
@@ -28,7 +28,7 @@ export default function Dashboard() {
         {
           icon: <FaBriefcase />,
           title: 'My Services',
-          description: 'Manage your active service listings',
+          description: 'Manage your services',
           to: '/freelancer/services',
           bg: 'bg-blue-100',
           iconColor: 'text-blue-600',
@@ -36,7 +36,7 @@ export default function Dashboard() {
         {
           icon: <FaPlusCircle />,
           title: 'Create Service',
-          description: 'Add a new service to offer',
+          description: 'Add a new service',
           to: '/freelancer/create-service',
           bg: 'bg-cyan-100',
           iconColor: 'text-cyan-600',
@@ -44,15 +44,15 @@ export default function Dashboard() {
         {
           icon: <FaFileContract />,
           title: 'Contracts',
-          description: 'View and manage your contracts',
-          to: '/freelancer/contracts',
+          description: 'Manage your contracts',
+          to: '/contracts',
           bg: 'bg-green-100',
           iconColor: 'text-green-600',
         },
         {
           icon: <FaDollarSign />,
           title: 'Earnings',
-          description: 'Track your earnings and milestones',
+          description: 'Track your income',
           to: '/freelancer/earnings',
           bg: 'bg-purple-100',
           iconColor: 'text-purple-600',
@@ -60,17 +60,25 @@ export default function Dashboard() {
         {
           icon: <FaStar />,
           title: 'Reviews',
-          description: 'See feedback from clients',
+          description: 'Client feedback',
           to: '/freelancer/reviews',
           bg: 'bg-yellow-100',
           iconColor: 'text-yellow-600',
+        },
+        {
+          icon: <FaListAlt />,
+          title: 'All Services',
+          description: 'Browse all services',
+          to: '/services',
+          bg: 'bg-red-100',
+          iconColor: 'text-red-600',
         },
       ]
     : [
         {
           icon: <FaPlusCircle />,
           title: 'Post a Job',
-          description: 'Create a new job listing',
+          description: 'Create a job listing',
           to: '/post-job',
           bg: 'bg-blue-100',
           iconColor: 'text-blue-600',
@@ -78,7 +86,7 @@ export default function Dashboard() {
         {
           icon: <FaBriefcase />,
           title: 'My Jobs',
-          description: 'Manage your job listings',
+          description: 'Manage job listings',
           to: '/client/jobs',
           bg: 'bg-green-100',
           iconColor: 'text-green-600',
@@ -87,17 +95,25 @@ export default function Dashboard() {
           icon: <FaFileContract />,
           title: 'Contracts',
           description: 'Track project progress',
-          to: '/client/contracts',
+          to: '/contracts',
           bg: 'bg-purple-100',
           iconColor: 'text-purple-600',
         },
         {
           icon: <FaUsers />,
           title: 'Freelancers',
-          description: 'Browse and manage hired freelancers',
+          description: 'Manage freelancers',
           to: '/freelancers',
           bg: 'bg-yellow-100',
           iconColor: 'text-yellow-600',
+        },
+        {
+          icon: <FaListAlt />,
+          title: 'Browse Services',
+          description: 'See available services',
+          to: '/services',
+          bg: 'bg-red-100',
+          iconColor: 'text-red-600',
         },
       ];
 
@@ -125,7 +141,7 @@ function DashboardCard({ icon, title, description, to, bg, iconColor }) {
   return (
     <Link
       to={to}
-      className={`rounded-2xl p-6 ${bg} hover:shadow-xl transition-all shadow-md`}
+      className={`rounded-2xl p-6 ${bg} hover:shadow-xl transition-all shadow-md block`}
     >
       <div className={`${iconColor} text-4xl mb-4`}>{icon}</div>
       <h3 className="text-xl font-semibold mb-2 text-gray-800">{title}</h3>

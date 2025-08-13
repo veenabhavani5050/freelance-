@@ -1,8 +1,16 @@
+// controllers/serviceController.js
 import Service from '../models/Service.js';
 
 export const createService = async (req, res) => {
   try {
-    const service = new Service({ ...req.body, user: req.user._id });
+    const images = req.files?.map((file) => `/uploads/services/${file.filename}`) || [];
+
+    const service = new Service({
+      ...req.body,
+      images,
+      user: req.user._id,
+    });
+
     const createdService = await service.save();
     res.status(201).json(createdService);
   } catch (error) {
@@ -12,7 +20,16 @@ export const createService = async (req, res) => {
 
 export const getAllServices = async (req, res) => {
   try {
-    const services = await Service.find().populate('user', 'name email');
+    const { category, priceMin, priceMax, available } = req.query;
+
+    const query = {};
+    if (category) query.category = category;
+    if (available !== undefined) query.available = available === 'true';
+    if (priceMin || priceMax) query.price = {};
+    if (priceMin) query.price.$gte = Number(priceMin);
+    if (priceMax) query.price.$lte = Number(priceMax);
+
+    const services = await Service.find(query).populate('user', 'name email');
     res.status(200).json(services);
   } catch (error) {
     res.status(500).json({ message: 'Error fetching services', error: error.message });
@@ -35,6 +52,10 @@ export const updateService = async (req, res) => {
     if (!service) return res.status(404).json({ message: 'Service not found' });
     if (service.user.toString() !== req.user._id.toString())
       return res.status(403).json({ message: 'Not authorized' });
+
+    if (req.files?.length) {
+      service.images = req.files.map((file) => `/uploads/services/${file.filename}`);
+    }
 
     Object.assign(service, req.body);
     const updated = await service.save();

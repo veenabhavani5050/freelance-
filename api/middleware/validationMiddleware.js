@@ -1,3 +1,4 @@
+// middleware/validationMiddleware.js
 import { body, validationResult } from 'express-validator';
 
 export const validateService = [
@@ -6,6 +7,7 @@ export const validateService = [
   body('price').isFloat({ gt: 0 }).withMessage('Price must be a positive number'),
   body('category').notEmpty().withMessage('Category is required'),
   body('deliveryTime').isInt({ gt: 0 }).withMessage('Delivery time must be a positive integer'),
+  body('available').optional().isBoolean().withMessage('Available must be true or false'),
 
   (req, res, next) => {
     const errors = validationResult(req);

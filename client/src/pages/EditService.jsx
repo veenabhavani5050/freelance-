@@ -1,53 +1,177 @@
 // src/pages/EditService.jsx
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import { useParams, useNavigate } from 'react-router-dom';
+import API from '../api/axios';
 import { toast } from 'react-toastify';
-import { useNavigate, useParams } from 'react-router-dom';
+import {
+  FaEdit, FaHeading, FaFileAlt, FaTags,
+  FaRupeeSign, FaRegClock, FaListAlt
+} from 'react-icons/fa';
 
-const EditService = () => {
+export default function EditService() {
   const { id } = useParams();
-  const [form, setForm] = useState({
-    title: '', description: '', category: '', price: '', deliveryTime: '', tags: ''
-  });
   const navigate = useNavigate();
 
-  useEffect(() => {
-    axios.get(`/api/services/${id}`)
-      .then(res => {
-        const { title, description, category, price, deliveryTime, tags } = res.data;
-        setForm({ title, description, category, price, deliveryTime, tags: tags.join(', ') });
-      })
-      .catch(() => toast.error('Failed to load service'));
-  }, [id]);
+  const [formData, setFormData] = useState({
+    title: '',
+    description: '',
+    category: '',
+    price: '',
+    deliveryTime: '',
+    tags: '',
+  });
 
-  const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
+  useEffect(() => {
+    const fetchService = async () => {
+      try {
+        const user = JSON.parse(localStorage.getItem('user'));
+        const token = user?.token;
+
+        const { data } = await API.get(`/services/${id}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        setFormData({
+          title: data.title,
+          description: data.description,
+          category: data.category,
+          price: data.price,
+          deliveryTime: data.deliveryTime,
+          tags: data.tags?.join(', ') || '',
+        });
+      } catch (err) {
+        toast.error('Failed to load service for editing');
+        navigate('/freelancer/services');
+      }
+    };
+    fetchService();
+  }, [id, navigate]);
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const tagsArray = form.tags.split(',').map(tag => tag.trim());
-      await axios.put(`/api/services/${id}`, { ...form, tags: tagsArray });
-      toast.success('Service updated');
-      navigate('/freelancer/services');
-    } catch {
+      const user = JSON.parse(localStorage.getItem('user'));
+      const token = user?.token;
+
+      const updatedData = {
+        ...formData,
+        tags: formData.tags.split(',').map((tag) => tag.trim()),
+      };
+
+      await API.put(`/services/${id}`, updatedData, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      toast.success('Service updated successfully');
+      navigate(`/freelancer/services`);
+    } catch (err) {
       toast.error('Update failed');
     }
   };
 
   return (
-    <div className="p-4 max-w-md mx-auto">
-      <h2 className="text-2xl font-bold text-blue-600 mb-4">Edit Service</h2>
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <input name="title" value={form.title} onChange={handleChange} className="input" placeholder="Title" />
-        <textarea name="description" value={form.description} onChange={handleChange} className="input" placeholder="Description" />
-        <input name="category" value={form.category} onChange={handleChange} className="input" placeholder="Category" />
-        <input name="price" type="number" value={form.price} onChange={handleChange} className="input" placeholder="Price" />
-        <input name="deliveryTime" type="number" value={form.deliveryTime} onChange={handleChange} className="input" placeholder="Delivery Time (days)" />
-        <input name="tags" value={form.tags} onChange={handleChange} className="input" placeholder="Tags (comma-separated)" />
-        <button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded">Update</button>
+    <div className="min-h-screen bg-gray-100 flex items-center justify-center px-4">
+      <form onSubmit={handleSubmit} className="bg-white shadow-xl rounded-2xl p-8 w-full max-w-2xl">
+        <h2 className="text-3xl font-bold text-yellow-600 mb-6 flex items-center gap-2">
+          <FaEdit className="text-yellow-500" /> Edit Service
+        </h2>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-1">
+              <FaHeading className="inline-block mr-1" /> Title
+            </label>
+            <input
+              type="text"
+              name="title"
+              value={formData.title}
+              onChange={handleChange}
+              required
+              className="w-full border border-gray-300 rounded-md px-3 py-2"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-1">
+              <FaListAlt className="inline-block mr-1" /> Category
+            </label>
+            <input
+              type="text"
+              name="category"
+              value={formData.category}
+              onChange={handleChange}
+              required
+              className="w-full border border-gray-300 rounded-md px-3 py-2"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-1">
+              <FaRupeeSign className="inline-block mr-1" /> Price (₹)
+            </label>
+            <input
+              type="number"
+              name="price"
+              value={formData.price}
+              onChange={handleChange}
+              required
+              className="w-full border border-gray-300 rounded-md px-3 py-2"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-1">
+              <FaRegClock className="inline-block mr-1" /> Delivery Time (days)
+            </label>
+            <input
+              type="number"
+              name="deliveryTime"
+              value={formData.deliveryTime}
+              onChange={handleChange}
+              required
+              className="w-full border border-gray-300 rounded-md px-3 py-2"
+            />
+          </div>
+        </div>
+
+        <div className="mt-5">
+          <label className="block text-sm font-semibold text-gray-700 mb-1">
+            <FaFileAlt className="inline-block mr-1" /> Description
+          </label>
+          <textarea
+            name="description"
+            value={formData.description}
+            onChange={handleChange}
+            rows={4}
+            required
+            className="w-full border border-gray-300 rounded-md px-3 py-2"
+          />
+        </div>
+
+        <div className="mt-5">
+          <label className="block text-sm font-semibold text-gray-700 mb-1">
+            <FaTags className="inline-block mr-1" /> Tags (comma-separated)
+          </label>
+          <input
+            type="text"
+            name="tags"
+            value={formData.tags}
+            onChange={handleChange}
+            className="w-full border border-gray-300 rounded-md px-3 py-2"
+          />
+        </div>
+
+        <button
+          type="submit"
+          className="mt-6 w-full bg-yellow-500 hover:bg-yellow-600 text-white font-semibold py-2 px-4 rounded-md transition-all"
+        >
+          Update Service
+        </button>
       </form>
     </div>
   );
-};
-
-export default EditService;
+}

@@ -1,38 +1,71 @@
-// 📁 src/components/Sidebar.jsx
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 
-export default function Sidebar() {
-  const [role, setRole] = useState('');
+const Sidebar = ({ role }) => {
   const location = useLocation();
 
-  useEffect(() => {
-    const user = JSON.parse(localStorage.getItem('user'));
-    setRole(user?.role || '');
-  }, [location.pathname]);
+  const linkClass = (path) =>
+    `block py-2 px-3 rounded hover:bg-blue-600 transition ${
+      location.pathname.startsWith(path) ? 'bg-blue-800 font-semibold' : ''
+    }`;
 
   return (
     <div className="w-64 bg-blue-700 text-white p-6 space-y-4 min-h-screen">
       <h2 className="text-xl font-bold mb-4">
-        {role === 'freelancer' ? 'Freelancer Panel' : 'Client Panel'}
+        {role === 'freelancer' ? '🧑‍🎨 FreelanceHub: Freelancer' : '🧑‍💼 FreelanceHub: Client'}
       </h2>
 
-      <Link to="/dashboard" className="block hover:text-blue-200">🏠 Dashboard</Link>
-      <Link to="/profile" className="block hover:text-blue-200">👤 Profile</Link>
-
-      {role === 'freelancer' && (
+      {role === 'freelancer' ? (
         <>
-          <Link to="/freelancer/services" className="block hover:text-blue-200">📦 My Services</Link>
-          <Link to="/freelancer/create-service" className="block hover:text-blue-200">➕ Add New Service</Link>
+          <Link to="/freelancer/dashboard" className={linkClass('/freelancer/dashboard')}>
+            🏠 Dashboard
+          </Link>
+          <Link to="/profile" className={linkClass('/profile')}>
+            👤 Profile
+          </Link>
+          <Link to="/freelancer/services" className={linkClass('/freelancer/services')}>
+            📦 My Services
+          </Link>
+          <Link to="/freelancer/create-service" className={linkClass('/freelancer/create-service')}>
+            ➕ Create Service
+          </Link>
+          <Link to="/contracts" className={linkClass('/contracts')}>
+            📁 My Contracts
+          </Link>
+          <Link to="/freelancer/earnings" className={linkClass('/freelancer/earnings')}>
+            💰 Earnings
+          </Link>
+          <Link to="/freelancer/reviews" className={linkClass('/freelancer/reviews')}>
+            ⭐ My Reviews
+          </Link>
         </>
-      )}
-
-      {role === 'client' && (
+      ) : (
         <>
-          <Link to="/post-job" className="block hover:text-blue-200 font-semibold">📝 Post a Job</Link>
-          <Link to="/client/jobs" className="block hover:text-blue-200">📋 My Job Listings</Link>
+          <Link to="/client/dashboard" className={linkClass('/client/dashboard')}>
+            🏠 Dashboard
+          </Link>
+          <Link to="/profile" className={linkClass('/profile')}>
+            👤 Profile
+          </Link>
+          <Link to="/post-job" className={linkClass('/post-job')}>
+            📝 Post a Job
+          </Link>
+          <Link to="/client/jobs" className={linkClass('/client/jobs')}>
+            📋 My Jobs
+          </Link>
+          <Link to="/contracts" className={linkClass('/contracts')}>
+            📁 Contracts
+          </Link>
+          <Link to="/freelancers" className={linkClass('/freelancers')}>
+            🔍 Freelancers
+          </Link>
+          <Link to="/payments" className={linkClass('/payments')}>
+            💸 Payments
+          </Link>
         </>
       )}
     </div>
   );
-}
+};
+
+export default Sidebar;
