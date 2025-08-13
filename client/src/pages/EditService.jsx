@@ -24,12 +24,8 @@ export default function EditService() {
   useEffect(() => {
     const fetchService = async () => {
       try {
-        const user = JSON.parse(localStorage.getItem('user'));
-        const token = user?.token;
-
-        const { data } = await API.get(`/services/${id}`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        // Removed manual header setting as axios.js interceptor handles it
+        const { data } = await API.get(`/services/${id}`);
 
         setFormData({
           title: data.title,
@@ -41,6 +37,7 @@ export default function EditService() {
         });
       } catch (err) {
         toast.error('Failed to load service for editing');
+        console.error("Fetch service error:", err);
         navigate('/freelancer/services');
       }
     };
@@ -54,22 +51,19 @@ export default function EditService() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const user = JSON.parse(localStorage.getItem('user'));
-      const token = user?.token;
-
       const updatedData = {
         ...formData,
         tags: formData.tags.split(',').map((tag) => tag.trim()),
       };
 
-      await API.put(`/services/${id}`, updatedData, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      // Removed manual header setting as axios.js interceptor handles it
+      await API.put(`/services/${id}`, updatedData);
 
       toast.success('Service updated successfully');
       navigate(`/freelancer/services`);
     } catch (err) {
-      toast.error('Update failed');
+      toast.error(err.response?.data?.message || 'Update failed');
+      console.error("Update service error:", err);
     }
   };
 

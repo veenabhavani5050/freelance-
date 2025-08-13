@@ -20,6 +20,7 @@ const Services = () => {
       const res = await API.get('/services');
       setServices(res.data);
     } catch (err) {
+      // Improved error logging for better debugging
       console.error('Failed to fetch services:', err);
     } finally {
       setLoading(false);

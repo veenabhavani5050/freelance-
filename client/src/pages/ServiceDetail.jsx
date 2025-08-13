@@ -1,7 +1,7 @@
 // src/pages/ServiceDetail.jsx
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import axios from 'axios';
+import API from '../api/axios'; // Corrected: Using the configured API instance
 import {
   FaTags,
   FaRegClock,
@@ -15,7 +15,8 @@ const ServiceDetail = () => {
   const [service, setService] = useState(null);
 
   useEffect(() => {
-    axios.get(`/api/services/${id}`)
+    // Corrected: Using API instance for authenticated requests
+    API.get(`/services/${id}`)
       .then(res => setService(res.data))
       .catch(err => console.error(err));
   }, [id]);

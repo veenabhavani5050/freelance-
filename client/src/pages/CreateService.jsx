@@ -1,7 +1,7 @@
 // src/pages/freelancer/CreateService.jsx
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import API from '../api/axios';
+import API from '../api/axios'; // Corrected path to axios instance
 import { toast } from 'react-toastify';
 import { FaPlusCircle, FaTimesCircle } from 'react-icons/fa';
 
@@ -12,9 +12,9 @@ export default function CreateService() {
     description: '',
     category: '',
     price: '',
-    estimatedDelivery: '',
-    skills: '', // Comma-separated string
-    gallery: [{ imageUrl: '' }], // Array of objects
+    deliveryTime: '',
+    skills: '',
+    gallery: [{ imageUrl: '' }],
   });
   const [loading, setLoading] = useState(false);
 
@@ -47,7 +47,7 @@ export default function CreateService() {
         skills: form.skills.split(',').map((s) => s.trim()),
         gallery: form.gallery.map(g => g.imageUrl),
         price: Number(form.price),
-        estimatedDelivery: Number(form.estimatedDelivery),
+        deliveryTime: Number(form.deliveryTime),
       };
 
       await API.post('/services', payload);
@@ -121,11 +121,11 @@ export default function CreateService() {
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <label className="block text-gray-700 font-medium mb-1">Estimated Delivery (days)</label>
+              <label className="block text-gray-700 font-medium mb-1">Delivery Time (days)</label>
               <input
                 type="number"
-                name="estimatedDelivery"
-                value={form.estimatedDelivery}
+                name="deliveryTime"
+                value={form.deliveryTime}
                 onChange={handleChange}
                 placeholder="e.g., 7"
                 className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
