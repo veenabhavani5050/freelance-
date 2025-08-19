@@ -1,4 +1,3 @@
-// src/components/Sidebar.jsx
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useUser } from '../context/UserContext';
@@ -7,14 +6,14 @@ const Sidebar = () => {
   const location = useLocation();
   const { user } = useUser();
 
-  // Don't render the sidebar if the user is not logged in
-  if (!user) {
+  // If there's no user or the user object is not fully loaded, don't render the sidebar.
+  if (!user || !user.user) {
     return null;
   }
 
-  const role = user?.user?.role;
+  // Correctly access the user's role from the nested user object
+  const role = user.user.role;
 
-  // A helper function to apply active class to the current link
   const linkClass = (path) =>
     `block py-2 px-3 rounded hover:bg-blue-600 transition ${
       location.pathname.startsWith(path) ? 'bg-blue-800 font-semibold' : ''
@@ -35,20 +34,23 @@ const Sidebar = () => {
           <Link to="/profile" className={linkClass('/profile')}>
             👤 Profile
           </Link>
+          <Link to="/jobs" className={linkClass('/jobs')}>
+            🔍 Browse Jobs
+          </Link>
+          <Link to="/freelancer/proposals" className={linkClass('/freelancer/proposals')}>
+            📝 My Proposals
+          </Link>
+          <Link to="/contracts" className={linkClass('/contracts')}>
+            📁 My Contracts
+          </Link>
           <Link to="/freelancer/services" className={linkClass('/freelancer/services')}>
             📦 My Services
           </Link>
-          <Link to="/freelancer/create-service" className={linkClass('/freelancer/create-service')}>
-            ➕ Create Service
-          </Link>
-          <Link to="/freelancer/contracts" className={linkClass('/freelancer/contracts')}>
-            📁 My Contracts
+          <Link to="/freelancer/reviews" className={linkClass('/freelancer/reviews')}>
+            ⭐ Reviews
           </Link>
           <Link to="/freelancer/earnings" className={linkClass('/freelancer/earnings')}>
-            💰 Earnings
-          </Link>
-          <Link to="/freelancer/reviews" className={linkClass('/freelancer/reviews')}>
-            ⭐ My Reviews
+            💰 My Earnings
           </Link>
         </>
       ) : (
@@ -66,7 +68,10 @@ const Sidebar = () => {
           <Link to="/client/jobs" className={linkClass('/client/jobs')}>
             📋 My Jobs
           </Link>
-          <Link to="/client/contracts" className={linkClass('/client/contracts')}>
+          <Link to="/client/proposals" className={linkClass('/client/proposals')}>
+            📑 Proposals
+          </Link>
+          <Link to="/contracts" className={linkClass('/contracts')}>
             📁 Contracts
           </Link>
           <Link to="/freelancers" className={linkClass('/freelancers')}>

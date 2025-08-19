@@ -1,13 +1,14 @@
-// controllers/serviceController.js
 import Service from '../models/Service.js';
 
 export const createService = async (req, res) => {
   try {
     const images = req.files?.map((file) => `/uploads/services/${file.filename}`) || [];
+    const tags = req.body.tags ? req.body.tags.split(',').map(tag => tag.trim()) : [];
 
     const service = new Service({
       ...req.body,
       images,
+      tags,
       user: req.user._id,
     });
 
@@ -36,6 +37,15 @@ export const getAllServices = async (req, res) => {
   }
 };
 
+export const getMyServices = async (req, res) => {
+  try {
+    const services = await Service.find({ user: req.user._id }).populate('user', 'name email');
+    res.status(200).json(services);
+  } catch (error) {
+    res.status(500).json({ message: 'Error fetching your services', error: error.message });
+  }
+};
+
 export const getServiceById = async (req, res) => {
   try {
     const service = await Service.findById(req.params.id).populate('user', 'name email');
@@ -56,8 +66,11 @@ export const updateService = async (req, res) => {
     if (req.files?.length) {
       service.images = req.files.map((file) => `/uploads/services/${file.filename}`);
     }
-
-    Object.assign(service, req.body);
+    
+    // Add logic to handle tags
+    const tags = req.body.tags ? req.body.tags.split(',').map(tag => tag.trim()) : [];
+    
+    Object.assign(service, { ...req.body, tags });
     const updated = await service.save();
     res.status(200).json(updated);
   } catch (error) {

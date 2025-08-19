@@ -1,48 +1,80 @@
 import mongoose from 'mongoose';
 import bcrypt from 'bcryptjs';
 
-const userSchema = new mongoose.Schema(
+const userSchema = mongoose.Schema(
   {
-    name: { type: String, required: true },
-    email: { type: String, required: true, unique: true },
-    password: { type: String }, // Made optional for Google users
-    role: { type: String, enum: ['freelancer', 'client'], required: true },
-    bio: { type: String, default: '' },
-
-    // New fields for freelancer profile
-    profilePic: { type: String }, // URL or file path to profile image
-    skills: [{ type: String }], // Array of skills
-    location: { type: String }, // Location string
-    portfolioLinks: [{ type: String }], // Links to portfolio work
+    name: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    email: {
+      type: String,
+      required: true,
+      unique: true,
+      lowercase: true,
+      trim: true,
+    },
+    password: {
+      type: String,
+      required: function () {
+        return this.provider === 'local';
+      },
+      select: false,
+    },
+    role: {
+      type: String,
+      required: true,
+      enum: ['freelancer', 'client', 'admin'],
+      default: 'freelancer',
+    },
+    bio: String,
+    profilePic: String,
+    skills: [String],
+    location: String,
+    portfolioLinks: [String],
     availability: {
       type: String,
-      enum: ['available', 'busy', 'offline'],
+      enum: ['full-time', 'part-time', 'contract', 'available', 'unavailable', 'busy'],
       default: 'available',
     },
-
-    // Fields for Google OAuth
-    googleId: { type: String, default: null },
+    googleId: String,
     provider: {
       type: String,
       enum: ['local', 'google'],
       default: 'local',
     },
+    resetPasswordToken: String,
+    resetPasswordExpires: Date,
+    passwordChangedAt: Date,
+    isActive: { type: Boolean, default: true },
   },
-  { timestamps: true }
+  {
+    timestamps: true,
+  }
 );
 
-// Hash password before saving (only if local and password exists)
+// Hash password if modified
 userSchema.pre('save', async function (next) {
-  if (!this.isModified('password') || this.provider === 'google') return next();
+  if (!this.isModified('password') || !this.password) return next();
   const salt = await bcrypt.genSalt(10);
   this.password = await bcrypt.hash(this.password, salt);
   next();
 });
 
-// Match user password (only for local accounts)
+// Compare password
 userSchema.methods.matchPassword = async function (enteredPassword) {
-  if (this.provider === 'google') return false; // No password to compare
-  return await bcrypt.compare(enteredPassword, this.password);
+  if (!this.password) return false;
+  return bcrypt.compare(enteredPassword, this.password);
+};
+
+// Check if password was changed after JWT was issued
+userSchema.methods.changedPasswordAfter = function (JWTTimestamp) {
+  if (this.passwordChangedAt) {
+    const changedTimestamp = parseInt(this.passwordChangedAt.getTime() / 1000, 10);
+    return JWTTimestamp < changedTimestamp;
+  }
+  return false;
 };
 
 const User = mongoose.model('User', userSchema);

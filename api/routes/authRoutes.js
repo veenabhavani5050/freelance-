@@ -1,5 +1,6 @@
 import express from 'express';
 import passport from '../config/passport.js';
+import rateLimit from 'express-rate-limit';
 import {
   registerUser,
   authUser,
@@ -8,27 +9,60 @@ import {
   resetPassword,
   getUserProfile,
   updateUserProfile,
-  googleLogin,      // Google One Tap handler
-  googleCallback,   // OAuth callback handler
+  googleLogin,
+  googleCallback,
 } from '../controllers/authController.js';
 import { protect } from '../middleware/authMiddleware.js';
 
 const router = express.Router();
 
-// Public Auth Routes
+/**
+ * ========================
+ * Rate Limiters
+ * ========================
+ */
+const loginLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 50,
+  message: { message: 'Too many login attempts. Try again later.' },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+const forgotLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000, // 1 hour
+  max: 5,
+  message: { message: 'Too many password reset requests. Try again later.' },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+/**
+ * ========================
+ * Public Auth Routes
+ * ========================
+ */
 router.post('/register', registerUser);
-router.post('/login', authUser);
+router.post('/login', loginLimiter, authUser);
 router.post('/logout', logoutUser);
-router.post('/forgot-password', forgotPassword);
+router.post('/forgot-password', forgotLimiter, forgotPassword);
 router.post('/reset/:token', resetPassword);
 
-// Google One Tap Login Route (POST with GSI token)
+/**
+ * ========================
+ * Google One-Tap Login
+ * ========================
+ */
 router.post('/google', googleLogin);
 
-// Google OAuth Routes
+/**
+ * ========================
+ * Google OAuth Login
+ * ========================
+ */
 router.get(
   '/google',
-  passport.authenticate('google', { scope: ['profile', 'email'] })
+  passport.authenticate('google', { scope: ['profile', 'email'], session: false })
 );
 
 router.get(
@@ -40,7 +74,11 @@ router.get(
   googleCallback
 );
 
-// Protected User Routes (JWT protected)
+/**
+ * ========================
+ * Protected Routes (JWT)
+ * ========================
+ */
 router.get('/profile', protect, getUserProfile);
 router.put('/profile', protect, updateUserProfile);
 

@@ -1,10 +1,9 @@
-// src/context/UserContext.jsx
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import API from '../api/axios';
 import { toast } from 'react-toastify';
 
-const UserContext = createContext();
+export const UserContext = createContext();
 
 export const useUser = () => useContext(UserContext);
 
@@ -19,7 +18,6 @@ export const UserProvider = ({ children }) => {
       if (storedUser) {
         const parsedUser = JSON.parse(storedUser);
         setUser(parsedUser);
-        // Optional: Check if token is still valid with a backend call
       }
     } catch (error) {
       console.error("Failed to parse user from localStorage", error);
@@ -42,11 +40,10 @@ export const UserProvider = ({ children }) => {
       toast.success('Logged out successfully!');
       navigate('/login');
     } catch (error) {
-      toast.error('Logout failed.');
+      toast.error('Logout failed. Please try again.');
     }
   };
 
-  // Profile update logic can go here
   const updateUser = (updatedUserData) => {
     const updatedUserWithToken = { ...updatedUserData, token: user.token };
     localStorage.setItem('user', JSON.stringify(updatedUserWithToken));

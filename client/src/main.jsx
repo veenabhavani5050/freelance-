@@ -7,13 +7,13 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import App from './App';
 import './index.css';
-import { UserProvider } from './context/UserContext'; // Import UserProvider
+import { UserProvider } from './context/UserContext';
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <BrowserRouter>
       <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
-        <UserProvider> {/* Wrap with UserProvider */}
+        <UserProvider>
           <App />
           <ToastContainer position="bottom-right" />
         </UserProvider>

@@ -1,4 +1,3 @@
-// src/pages/Contracts.jsx
 import React, { useEffect, useState } from 'react';
 import API from '../api/axios';
 import ContractCard from '../components/ContractCard';
@@ -16,23 +15,13 @@ export default function Contracts() {
       try {
         const { data } = await API.get('/contracts');
         
-        // --- FIX START ---
-        // We check if the data from the API is an array.
-        // If it's an array, we set it to the state.
-        // If it's not an array (e.g., an object with an error message),
-        // we default to an empty array to prevent the .map() error.
         if (Array.isArray(data)) {
           setContracts(data);
         } else {
           setContracts([]);
-          // Optional: You could also log a warning here if the data is unexpected.
-          // console.warn("API response for contracts was not an array:", data);
         }
-        // --- FIX END ---
-        
       } catch (err) {
         toast.error('Could not load contracts');
-        // On error, also ensure the state is an empty array.
         setContracts([]);
       } finally {
         setLoading(false);

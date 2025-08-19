@@ -1,59 +1,65 @@
-// middleware/authMiddleware.js
 import jwt from 'jsonwebtoken';
 import asyncHandler from 'express-async-handler';
 import User from '../models/User.js';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'changeme';
+const COOKIE_NAME = 'jwt';
 
-// Middleware to protect routes
+/**
+ * Middleware: Protect routes (authentication required)
+ */
 export const protect = asyncHandler(async (req, res, next) => {
-  let token;
+    let token;
 
-  // Check Authorization header first, then cookie
-  if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
-    token = req.headers.authorization.split(' ')[1];
-  } else if (req.cookies && req.cookies.jwt) {
-    token = req.cookies.jwt;
-  }
-
-  if (!token) {
-    res.status(401);
-    throw new Error('Not authorized — no token provided');
-  }
-
-  try {
-    const decoded = jwt.verify(token, JWT_SECRET);
-
-    // attach user (exclude password)
-    const userId = decoded.id || decoded.userId;
-    if (!userId) {
-      res.status(401);
-      throw new Error('Not authorized — invalid token payload');
+    // Prefer Authorization header, fallback to cookie
+    if (req.headers.authorization?.startsWith('Bearer ')) {
+        token = req.headers.authorization.split(' ')[1];
+    } else if (req.cookies && req.cookies[COOKIE_NAME]) {
+        token = req.cookies[COOKIE_NAME];
     }
 
-    const user = await User.findById(userId).select('-password');
-    if (!user) {
-      res.status(401);
-      throw new Error('Not authorized — user not found');
+    if (!token) {
+        res.status(401);
+        throw new Error('Not authorized — no token provided');
     }
 
-    req.user = user;
-    next();
-  } catch (err) {
-    // provide a slightly more descriptive message for token expiry
-    const msg = err.name === 'TokenExpiredError' ? 'Not authorized — token expired' : 'Not authorized — token invalid';
-    res.status(401);
-    throw new Error(msg);
-  }
+    try {
+        const decoded = jwt.verify(token, JWT_SECRET);
+        const user = await User.findById(decoded.userId).select('-password');
+
+        if (!user) {
+            res.status(401);
+            throw new Error('Not authorized — user not found');
+        }
+
+        // Check if password was changed after token was issued
+        const tokenIssuedAt = decoded.iat * 1000;
+        if (user.passwordChangedAt && user.passwordChangedAt.getTime() > tokenIssuedAt) {
+            res.status(401);
+            throw new Error('Not authorized — password changed, please login again');
+        }
+
+        req.user = user;
+        next();
+    } catch (err) {
+        const msg =
+            err.name === 'TokenExpiredError'
+                ? 'Not authorized — token expired'
+                : 'Not authorized — invalid token';
+        res.status(401);
+        throw new Error(msg);
+    }
 });
 
-// Middleware to authorize user based on roles
-export const authorizeRoles = (...roles) => {
-  return (req, res, next) => {
-    if (!req.user || !roles.includes(req.user.role)) {
-      res.status(403);
-      throw new Error('Access denied: Insufficient role');
-    }
-    next();
-  };
+/**
+ * Middleware: Role-based authorization
+ */
+export const checkRole = (...roles) => {
+    return (req, res, next) => {
+        if (!req.user || !roles.includes(req.user.role)) {
+            res.status(403);
+            throw new Error('Access denied — insufficient role');
+        }
+        next();
+    };
 };

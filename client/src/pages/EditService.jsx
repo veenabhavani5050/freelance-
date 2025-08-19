@@ -1,4 +1,3 @@
-// src/pages/EditService.jsx
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import API from '../api/axios';
@@ -20,13 +19,12 @@ export default function EditService() {
     deliveryTime: '',
     tags: '',
   });
+  const [images, setImages] = useState([]);
 
   useEffect(() => {
     const fetchService = async () => {
       try {
-        // Removed manual header setting as axios.js interceptor handles it
         const { data } = await API.get(`/services/${id}`);
-
         setFormData({
           title: data.title,
           description: data.description,
@@ -47,17 +45,27 @@ export default function EditService() {
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
+  
+  const handleImageChange = (e) => {
+    setImages(Array.from(e.target.files));
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const updatedData = {
-        ...formData,
-        tags: formData.tags.split(',').map((tag) => tag.trim()),
-      };
+      const updatedFormData = new FormData();
+      for (const key in formData) {
+        updatedFormData.append(key, formData[key]);
+      }
+      images.forEach((image) => {
+        updatedFormData.append('images', image);
+      });
 
-      // Removed manual header setting as axios.js interceptor handles it
-      await API.put(`/services/${id}`, updatedData);
+      await API.put(`/services/${id}`, updatedFormData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
 
       toast.success('Service updated successfully');
       navigate(`/freelancer/services`);
@@ -155,6 +163,19 @@ export default function EditService() {
             name="tags"
             value={formData.tags}
             onChange={handleChange}
+            className="w-full border border-gray-300 rounded-md px-3 py-2"
+          />
+        </div>
+        
+        <div className="mt-5">
+          <label className="block text-sm font-semibold text-gray-700 mb-1">
+            Update Images (optional)
+          </label>
+          <input
+            type="file"
+            name="images"
+            multiple
+            onChange={handleImageChange}
             className="w-full border border-gray-300 rounded-md px-3 py-2"
           />
         </div>

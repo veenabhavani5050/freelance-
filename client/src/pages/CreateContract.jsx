@@ -1,15 +1,15 @@
-// src/pages/CreateContract.jsx
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import API from '../api/axios';
 import { toast } from 'react-toastify';
 import Loader from '../components/Loader';
+import { FaTrash, FaPlus } from 'react-icons/fa';
 
 export default function CreateContract() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState(null);
-  const [freelancers, setFreelancers] = useState([]); // New state for freelancers
+  const [freelancers, setFreelancers] = useState([]);
 
   const [form, setForm] = useState({
     freelancerId: '',
@@ -32,17 +32,15 @@ export default function CreateContract() {
       setUser(storedUser);
 
       try {
-        // Fetch the list of freelancers to populate the dropdown
-        const { data } = await API.get('/api/freelancers'); 
+        const { data } = await API.get('/freelancers');
         if (Array.isArray(data)) {
           setFreelancers(data);
-          // Set the first freelancer as the default, or keep it empty
           if (data.length > 0) {
             setForm(prev => ({ ...prev, freelancerId: data[0]._id }));
           }
         }
       } catch (err) {
-        toast.error('Failed to load freelancers');
+        toast.error(err.response?.data?.message || 'Failed to load freelancers');
       } finally {
         setLoading(false);
       }
@@ -61,6 +59,17 @@ export default function CreateContract() {
       ...prev,
       milestones: [...prev.milestones, { title: '', description: '', amount: '', dueDate: '' }],
     }));
+
+  const removeMilestone = (idx) => {
+    if (form.milestones.length > 1) {
+      setForm((prev) => ({
+        ...prev,
+        milestones: prev.milestones.filter((_, i) => i !== idx),
+      }));
+    } else {
+      toast.error("A contract must have at least one milestone.");
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -82,9 +91,14 @@ export default function CreateContract() {
         })),
       };
 
-      await API.post('/contracts', payload);
+      // The key change is here: capturing the response from the API call.
+      // The response data should contain the new contract object with its ID.
+      const { data } = await API.post('/contracts', payload);
+      const newContractId = data._id; // Assuming the new contract ID is in data._id
+
       toast.success('Contract created successfully!');
-      navigate('/contracts');
+      // Navigate to the details page of the newly created contract.
+      navigate(`/contracts/${newContractId}`);
     } catch (err) {
       toast.error(err.response?.data?.message || 'Failed to create contract');
     }
@@ -120,7 +134,7 @@ export default function CreateContract() {
           </select>
         </div>
 
-        {/* Other form fields remain the same */}
+        {/* Other form fields */}
         <div className="space-y-2">
           <label className="block text-gray-700 font-medium">Title</label>
           <input
@@ -155,13 +169,24 @@ export default function CreateContract() {
         <h3 className="text-xl font-semibold mt-6 mb-4">Milestones</h3>
         {form.milestones.map((m, idx) => (
           <div key={idx} className="space-y-2 border border-dashed border-gray-400 p-4 rounded-md bg-gray-50">
-            <h4 className="font-semibold text-gray-800">Milestone #{idx + 1}</h4>
+            <h4 className="font-semibold text-gray-800 flex justify-between items-center">
+              Milestone #{idx + 1}
+              <button
+                type="button"
+                onClick={() => removeMilestone(idx)}
+                className="text-red-500 hover:text-red-700 transition"
+                disabled={form.milestones.length === 1}
+              >
+                <FaTrash />
+              </button>
+            </h4>
             <input
               type="text"
               placeholder="Milestone Title"
               className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-blue-200"
               value={m.title}
               onChange={(e) => handleMilestoneChange(idx, 'title', e.target.value)}
+              required
             />
             <textarea
               placeholder="Milestone Description"
@@ -176,6 +201,7 @@ export default function CreateContract() {
               className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-blue-200"
               value={m.amount}
               onChange={(e) => handleMilestoneChange(idx, 'amount', e.target.value)}
+              required
             />
             <input
               type="date"
@@ -188,9 +214,9 @@ export default function CreateContract() {
         <button
           type="button"
           onClick={addMilestone}
-          className="text-blue-600 hover:text-blue-800 font-medium transition duration-200"
+          className="flex items-center gap-2 text-blue-600 hover:text-blue-800 font-medium transition duration-200"
         >
-          + Add another milestone
+          <FaPlus /> Add another milestone
         </button>
 
         <div className="flex justify-between items-center mt-6">

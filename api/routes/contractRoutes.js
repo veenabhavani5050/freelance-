@@ -1,33 +1,52 @@
-// routes/contractRoutes.js
 import express from 'express';
 import {
   createContract,
   getMyContracts,
+  getContractById,
   updateContractStatus,
   completeMilestone,
   updateMilestone,
   deleteContract,
-  approveMilestone
+  approveMilestone,
+  createReview,
 } from '../controllers/contractController.js';
-import { protect } from '../middleware/authMiddleware.js';
+// FIX: Change 'authorizeRoles' to 'checkRole'
+import { protect, checkRole } from '../middleware/authMiddleware.js'; 
 
 const router = express.Router();
 
-router.route('/')
-  .post(protect, createContract)
+// Create contract (only clients) & Get contracts (both roles)
+router
+  .route('/')
+  .post(protect, checkRole('client'), createContract) // FIX: Change 'authorizeRoles' to 'checkRole'
   .get(protect, getMyContracts);
 
-// Status change (accept/cancel/start/complete)
+// Get single contract
+router.route('/:id').get(protect, getContractById);
+
+// Update contract status (client accepts/cancels, freelancer marks progress)
 router.route('/:id/status').patch(protect, updateContractStatus);
 
-// Soft delete
-router.route('/:id/delete').delete(protect, deleteContract);
+// Soft delete contract (client or freelancer)
+router.route('/:id').delete(protect, deleteContract);
 
-// Milestone endpoints
-router.route('/:id/milestones/:milestoneIndex/complete').patch(protect, completeMilestone);
-// client approves and triggers payment
-router.route('/:id/milestones/:milestoneIndex/approve').patch(protect, approveMilestone);
+// Milestones
+// Freelancer marks milestone complete
+router
+  .route('/:id/milestones/:milestoneIndex/complete')
+  .patch(protect, checkRole('freelancer'), completeMilestone); // FIX: Change 'authorizeRoles' to 'checkRole'
 
-router.route('/:id/milestones/:milestoneIndex/edit').patch(protect, updateMilestone);
+// Client approves milestone & releases payment
+router
+  .route('/:id/milestones/:milestoneIndex/approve')
+  .patch(protect, checkRole('client'), approveMilestone); // FIX: Change 'authorizeRoles' to 'checkRole'
+
+// Client updates milestone details
+router
+  .route('/:id/milestones/:milestoneIndex')
+  .patch(protect, checkRole('client'), updateMilestone); // FIX: Change 'authorizeRoles' to 'checkRole'
+
+// Add review after contract completion (only clients)
+router.route('/:id/review').post(protect, checkRole('client'), createReview); // FIX: Change 'authorizeRoles' to 'checkRole'
 
 export default router;

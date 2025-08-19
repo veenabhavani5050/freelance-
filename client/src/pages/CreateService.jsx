@@ -1,7 +1,6 @@
-// src/pages/freelancer/CreateService.jsx
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import API from '../api/axios'; // Corrected path to axios instance
+import API from '../api/axios';
 import { toast } from 'react-toastify';
 import { FaPlusCircle, FaTimesCircle } from 'react-icons/fa';
 
@@ -13,28 +12,17 @@ export default function CreateService() {
     category: '',
     price: '',
     deliveryTime: '',
-    skills: '',
-    gallery: [{ imageUrl: '' }],
+    tags: '',
   });
+  const [images, setImages] = useState([]);
   const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleGalleryChange = (index, value) => {
-    const newGallery = [...form.gallery];
-    newGallery[index].imageUrl = value;
-    setForm({ ...form, gallery: newGallery });
-  };
-
-  const addGalleryImage = () => {
-    setForm({ ...form, gallery: [...form.gallery, { imageUrl: '' }] });
-  };
-
-  const removeGalleryImage = (index) => {
-    const newGallery = form.gallery.filter((_, i) => i !== index);
-    setForm({ ...form, gallery: newGallery });
+  const handleImageChange = (e) => {
+    setImages(Array.from(e.target.files));
   };
 
   const handleSubmit = async (e) => {
@@ -42,15 +30,20 @@ export default function CreateService() {
     setLoading(true);
 
     try {
-      const payload = {
-        ...form,
-        skills: form.skills.split(',').map((s) => s.trim()),
-        gallery: form.gallery.map(g => g.imageUrl),
-        price: Number(form.price),
-        deliveryTime: Number(form.deliveryTime),
-      };
+      const formData = new FormData();
+      for (const key in form) {
+        formData.append(key, form[key]);
+      }
+      images.forEach((image) => {
+        formData.append('images', image);
+      });
 
-      await API.post('/services', payload);
+      await API.post('/services', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+
       toast.success('Service created successfully!');
       navigate('/freelancer/services');
     } catch (error) {
@@ -133,44 +126,27 @@ export default function CreateService() {
               />
             </div>
             <div>
-              <label className="block text-gray-700 font-medium mb-1">Skills (comma-separated)</label>
+              <label className="block text-gray-700 font-medium mb-1">Tags (comma-separated)</label>
               <input
                 type="text"
-                name="skills"
-                value={form.skills}
+                name="tags"
+                value={form.tags}
                 onChange={handleChange}
-                placeholder="e.g., React, Node.js, TailwindCSS"
+                placeholder="e.g., react, node.js, tailwindcss"
                 className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                required
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-gray-700 font-medium mb-2">Image Gallery</label>
-            {form.gallery.map((image, index) => (
-              <div key={index} className="flex items-center space-x-2 mb-2">
-                <input
-                  type="text"
-                  value={image.imageUrl}
-                  onChange={(e) => handleGalleryChange(index, e.target.value)}
-                  placeholder="Paste image URL here"
-                  className="flex-1 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-                {form.gallery.length > 1 && (
-                  <button type="button" onClick={() => removeGalleryImage(index)} className="text-red-500 hover:text-red-700 transition">
-                    <FaTimesCircle className="w-6 h-6" />
-                  </button>
-                )}
-              </div>
-            ))}
-            <button
-              type="button"
-              onClick={addGalleryImage}
-              className="flex items-center text-blue-600 hover:text-blue-800 transition font-medium mt-2"
-            >
-              <FaPlusCircle className="mr-2" /> Add another image
-            </button>
+            <label className="block text-gray-700 font-medium mb-2">Service Images</label>
+            <input
+              type="file"
+              name="images"
+              multiple
+              onChange={handleImageChange}
+              className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
           </div>
 
           <button

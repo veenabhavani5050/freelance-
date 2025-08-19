@@ -1,7 +1,6 @@
-// src/pages/ServiceDetail.jsx
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import API from '../api/axios'; // Corrected: Using the configured API instance
+import API from '../api/axios';
 import {
   FaTags,
   FaRegClock,
@@ -15,7 +14,6 @@ const ServiceDetail = () => {
   const [service, setService] = useState(null);
 
   useEffect(() => {
-    // Corrected: Using API instance for authenticated requests
     API.get(`/services/${id}`)
       .then(res => setService(res.data))
       .catch(err => console.error(err));
@@ -35,7 +33,7 @@ const ServiceDetail = () => {
         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-6">
           <div className="flex items-center text-gray-600 mb-2 sm:mb-0">
             <FaUser className="mr-2 text-blue-500" />
-            <span className="font-medium">{service?.freelancer?.name || "Freelancer"}</span>
+            <span className="font-medium">{service?.user?.name || "Freelancer"}</span>
           </div>
 
           <div className="flex space-x-4 text-sm text-gray-600">

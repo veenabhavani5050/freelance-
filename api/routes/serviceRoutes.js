@@ -1,4 +1,3 @@
-// routes/serviceRoutes.js
 import express from 'express';
 import {
   createService,
@@ -6,8 +5,9 @@ import {
   getServiceById,
   updateService,
   deleteService,
+  getMyServices,
 } from '../controllers/serviceController.js';
-import { protect, authorizeRoles } from '../middleware/authMiddleware.js';
+import { protect, checkRole } from '../middleware/authMiddleware.js'; // FIX: Change 'authorizeRoles' to 'checkRole'
 import { validateService } from '../middleware/validationMiddleware.js';
 import { upload } from '../middleware/uploadMiddleware.js';
 
@@ -17,24 +17,28 @@ router.route('/')
   .get(getAllServices)
   .post(
     protect,
-    authorizeRoles('freelancer'),
+    checkRole('freelancer'), // FIX: Change 'authorizeRoles' to 'checkRole'
     upload.array('images', 5), // upload up to 5 images
     validateService,
     createService
   );
 
+// Logged-in freelancer's services
+router.route('/my-services')
+  .get(protect, checkRole('freelancer'), getMyServices); // FIX: Change 'authorizeRoles' to 'checkRole'
+
 router.route('/:id')
   .get(getServiceById)
   .put(
     protect,
-    authorizeRoles('freelancer'),
+    checkRole('freelancer'), // FIX: Change 'authorizeRoles' to 'checkRole'
     upload.array('images', 5),
     validateService,
     updateService
   )
   .delete(
     protect,
-    authorizeRoles('freelancer'),
+    checkRole('freelancer'), // FIX: Change 'authorizeRoles' to 'checkRole'
     deleteService
   );
 

@@ -1,15 +1,15 @@
-// src/pages/Login.jsx
+// --- client/src/pages/Login.jsx ---
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { GoogleLogin, useGoogleOneTapLogin } from '@react-oauth/google';
 import API from '../api/axios';
-import { useUser } from '../context/UserContext'; // Import useUser
+import { useUser } from '../context/UserContext';
 
 export default function Login() {
   const [form, setForm] = useState({ email: '', password: '' });
   const navigate = useNavigate();
-  const { login } = useUser(); // Get login function from context
+  const { login } = useUser();
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -19,11 +19,13 @@ export default function Login() {
     e.preventDefault();
     try {
       const res = await API.post('/auth/login', form);
-      login(res.data); // Use the login function from context
-      toast.success('Login successful');
+      // The server now sends the token and user data in the response body
+      login(res.data);
+      toast.success('Login successful! Redirecting to your dashboard.');
       navigate('/dashboard');
     } catch (error) {
-      toast.error(error.response?.data?.message || 'Login failed');
+      // The error message is now more specific thanks to the backend updates
+      toast.error(error.response?.data?.message || 'Login failed. Please check your credentials.');
     }
   };
 
@@ -33,17 +35,17 @@ export default function Login() {
         credential: response.credential,
       });
 
-      login(res.data); // Use the login function from context
-      toast.success('Google login successful');
+      login(res.data);
+      toast.success('Google login successful! Redirecting to your dashboard.');
       navigate('/dashboard');
     } catch (err) {
-      toast.error(err.response?.data?.message || 'Google login failed');
+      toast.error(err.response?.data?.message || 'Google login failed. An unexpected error occurred.');
     }
   };
 
   useGoogleOneTapLogin({
     onSuccess: handleGoogleSuccess,
-    onError: () => toast.error('Google One Tap login failed'),
+    onError: () => toast.error('Google One Tap login failed. Please try the button instead.'),
     promptMomentNotification: (notification) => {
       if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
         console.log('One Tap not displayed:', notification.getNotDisplayedReason());
@@ -56,8 +58,6 @@ export default function Login() {
       <form onSubmit={handleSubmit} className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
         <h2 className="text-2xl font-bold mb-6 text-center text-blue-600">Login</h2>
         
-        {/* ... form inputs ... */}
-
         <label className="text-sm font-medium">Email</label>
         <input
           name="email"
@@ -90,7 +90,7 @@ export default function Login() {
           <p className="text-gray-500 mb-2">OR</p>
           <GoogleLogin
             onSuccess={handleGoogleSuccess}
-            onError={() => toast.error('Google login failed')}
+            onError={() => toast.error('Google login failed. Please try again.')}
           />
         </div>
 

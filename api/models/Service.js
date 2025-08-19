@@ -7,15 +7,17 @@ const serviceSchema = new mongoose.Schema(
     description: { type: String, required: true },
     price: { type: Number, required: true },
     category: { type: String, required: true },
-    images: [{ type: String }], // URLs of uploaded images
-    deliveryTime: { type: Number, required: true },
+    images: [{ type: String }],
+    deliveryTime: { type: Number, required: true }, // in days
     tags: [{ type: String }],
-    available: { type: Boolean, default: true }, // new field
+    available: { type: Boolean, default: true },
     user: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
       required: true,
     },
+    rating: { type: Number, default: 0 },
+    reviewsCount: { type: Number, default: 0 },
   },
   { timestamps: true }
 );
